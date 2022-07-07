@@ -1,0 +1,47 @@
+name: 'Terraform  Deploy'
+on:
+  push: 
+    
+env:
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v1
+      - name: Set up terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.1.9
+
+      - name: 'Terraform Init'
+        run: terraform init
+        
+      - name: 'Terraform Validate'
+        run: terraform validate
+        
+      - name: 'Terraform Plan'
+        run: terraform plan
+
+      - name: 'Terraform Apply'
+        run: terraform apply -auto-approve
+
+      - name: 'Terraform Destroy'
+        run: terraform destroy -auto-approve
+        
+      #- name: 'Upload new assets to s3'
+        #uses: chrislennon/action-aws-cli@v1.1
+        # All commands after this point have access to the AWS CLI
+        #TODO: Need to automate getting. bucket id.
+        # Also could split this into different parts since s3 upload only needed for submodule update.
+     # - run: aws s3 sync ./dist s3://s3-bucket-maxwell-demon --cache-control 'max-age=31536000' --exclude "*.html"
+      #  working-directory: ./modules/fe-personal-site
+       # env:
+        #  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      
